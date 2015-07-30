@@ -1,0 +1,222 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>AngularJS in A Groovy World</title><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" name="viewport"><link href="reveal.js/css/reveal.css" rel="stylesheet"><link rel="stylesheet" href="reveal.js/css/theme/white.css" id="theme"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css"><link href="reveal.js/lib/css/zenburn.css" rel="stylesheet"><script type="text/javascript">document.write( '<link rel="stylesheet" href="reveal.js/css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );</script><link rel="stylesheet" href="styles/font-awesome.min.css" />
+<link rel="stylesheet" href="styles/overrides.css" /></head><body><div class="reveal"><div class="slides"><section id="title" data-background="#b41f1f"><h2>AngularJS in A Groovy World</h2><div class="paragraph" id="author"><p>Craig Burke</p></div>
+<div class="imageblock" id="title-logo" style=""><div class="content"><img src="images/gr8uslogo.png" alt="gr8uslogo"></div></div></section>
+<section id="_about_me"><h2>About Me</h2><div class="ulist"><ul><li><p><span class="icon"><i class="fa fa-university"></i></span> Groovy/Grails Developer at Carnegie Mellon</p></li><li><p><span class="icon"><i class="fa fa-cog"></i></span> Creator of Various AngularJS Related Build Tools</p></li><li><p><span class="icon"><i class="fa fa-folder-open-o"></i></span> Creator of AngularJs/Grails Lazybones Template</p></li></ul></div>
+<div class="ulist"><ul><li><p><span class="icon"><i class="fa fa-globe"></i></span> www.craigburke.com</p></li><li><p><span class="icon"><i class="fa fa-twitter"></i></span> @craigburke1</p></li></ul></div></section>
+<section><section id="_introduction"><h2>Introduction</h2><div class="paragraph"><p>Let&#8217;s Build An Angular App</p></div></section><section id="_what_we_ll_need"><h2>What We&#8217;ll Need</h2><div class="ulist step"><ul><li class="fragment"><p>Gradle <span class="fragment">(and various plugins)</span></p></li><li class="fragment"><p>Asset Pipeline <span class="fragment">(and various modules)</span></p></li><li class="fragment"><p>John Papa&#8217;s Angular Style Guide</p></li><li class="fragment"><p>That&#8217;s About It</p></li></ul></div></section><section id="_starting_simple"><h2>Starting Simple</h2><div class="listingblock"><div class="content"><pre class="highlight"><code class="groovy language-groovy">plugins {
+  id 'com.bertramlabs.plugins.asset-pipeline' version '2.4.2'
+}
+
+task build(dependsOn: ['assetClean', 'assetCompile'])
+assetCompile.shouldRunAfter 'assetClean'</code></pre></div></div></section></section>
+<section><section id="_issue_1"><h2>Issue #1</h2><div class="paragraph subheading"><p>Client-Side Dependencies</p></div></section><section id="_solutions"><h2>Solutions</h2><div class="ulist step"><ul><li class="fragment"><p>Download and Manage Dependencies Ourselves <span class="fragment"><span class="icon"><i class="fa fa-frown-o"></i></span></span></p></li><li class="fragment"><p>Use Npm or Bower with Grunt or Gulp <span class="fragment"><span class="icon"><i class="fa fa-frown-o"></i></span></span></p></li><li class="fragment"><p>Use Gradle with the Bower Installer Plugin <span class="fragment"><span class="icon"><i class="fa fa-smile-o"></i></span></span></p></li></ul></div></section><section id="_bower_installer_plugin"><h2>Bower Installer Plugin</h2><div class="paragraph subheading"><p>Getting Started</p></div>
+<div class="listingblock fragment"><div class="content"><pre class="highlight"><code class="gradle language-gradle">plugins {
+  id 'com.moowork.node' version '0.10'
+  id 'com.craigburke.bower-installer' version '1.3.3'
+}</code></pre></div></div></section><section id="_bower_installer_tasks"><h2>Bower Installer Tasks</h2><div class="paragraph fragment"><p><strong>bowerInstall</strong> installs dependencies</p></div>
+<div class="paragraph fragment"><p><strong>bowerClean</strong> removes dependencies</p></div>
+<div class="paragraph fragment"><p><strong>bowerRefresh</strong> removes and reinstalls dependencies</p></div></section><section id="_bower_installer_configuration"><h2>Bower Installer Configuration</h2><div class="listingblock fragment"><div class="content"><pre class="highlight"><code class="gradle language-gradle">bower {
+  dependencies = [
+    bootstrap: '3.3.x'
+  ]
+
+  sources = [
+    bootstrap: ['dist/css/bootstrap.min.css', 'dist/fonts/**']
+  ]
+
+  excludes = ['jquery']
+}</code></pre></div></div></section><section id="_adding_a_new_dependency"><h2>Adding A New Dependency</h2><div class="ulist step"><ul><li class="fragment"><p>Add dependency to <strong>dependencies</strong> list</p></li><li class="fragment"><p><code>bowerRefresh -PbowerDebug=true</code></p></li><li class="fragment"><p>Limit files with the <strong>sources</strong> properties</p></li><li class="fragment"><p>Limit transitive dependencies with <strong>excludes</strong></p></li><li class="fragment"><p><code>bowerRefresh</code></p></li></ul></div></section></section>
+<section><section id="_issue_2"><h2>Issue #2</h2><div class="paragraph subheading"><p>JavaScript Minification</p></div></section><section id="_understanding_the_problem"><h2>Understanding the Problem</h2><div class="listingblock fragment"><div class="title">Our original source</div><div class="content"><pre class="highlight"><code class="javascript language-javascript">function ListController($log) {
+  $log.error('HELP!');
+}
+myApp.controller('ListController', ListController);</code></pre></div></div>
+<div class="listingblock fragment"><div class="title">Our minified source</div><div class="content"><pre class="highlight"><code class="javascript language-javascript">function a(b) {
+  b.error('HELP!');
+}
+c.controller('ListController', a);</code></pre></div></div></section><section id="_minification_safe_version"><h2>Minification Safe Version</h2><div class="listingblock fragment"><div class="title">Using $inject</div><div class="content"><pre class="highlight"><code class="javascript language-javascript">function ListController($log) {
+  $log.error('HELP!');
+}
+ListController.$inject = ['$log'];
+myApp.controller('ListController', ListController);</code></pre></div></div>
+<div class="listingblock fragment"><div class="title">Inline annotation</div><div class="content"><pre class="highlight"><code class="javascript language-javascript">function ListController($log) {
+  $log.error('HELP!');
+}
+myApp.controller('ListController', ['$log', ListController]);</code></pre></div></div></section><section id="_solutions_2"><h2>Solutions</h2><div class="ulist step"><ul><li class="fragment"><p>Manually use $inject or inline annotations <span class="fragment"><span class="icon"><i class="fa fa-frown-o"></i></span></span></p></li><li class="fragment"><p>Add special @ngInject comments to our functions <span class="fragment"><span class="icon"><i class="fa fa-meh-o"></i></span></span></p></li><li class="fragment"><p>Use the Angular Annotate Asset Pipeline plugin <span class="fragment"><span class="icon"><i class="fa fa-smile-o"></i></span></span></p></li></ul></div></section><section id="_the_nginject_annotation"><h2>The @ngInject annotation</h2><div class="listingblock fragment"><div class="title">Set angularPass option for the Asset Pipeline</div><div class="content"><pre class="highlight"><code class="gradle language-gradle">apply plugin: 'asset-pipeline'
+
+assets {
+  minifyOptions = [
+    angularPass: true
+  ]
+}</code></pre></div></div>
+<div class="listingblock fragment"><div class="title">Add a comment before any function we want annotated</div><div class="content"><pre class="highlight"><code class="javascript language-javascript">// @ngInject
+function ListController($log) {
+  $log.error('HELP!');
+}
+myApp.controller('ListController', ListController);</code></pre></div></div></section><section id="_angular_annotate_asset_pipeline_plugin"><h2>Angular Annotate Asset Pipeline Plugin</h2><div class="listingblock fragment"><div class="content"><pre class="highlight"><code class="gradle language-gradle">buildscript {
+  dependencies {
+    classpath 'com.craigburke.angular:angular-annotate-asset-pipeline:2.1.2'
+  }
+}</code></pre></div></div></section></section>
+<section><section id="_issue_3"><h2>Issue #3</h2><div class="paragraph subheading"><p>Global Scope</p></div></section><section id="_javascript_closure"><h2>JavaScript Closure</h2><div class="paragraph"><p>Wrap Angular components in an Immediately Invoked Function Expression (IIFE)</p></div>
+<aside class="notes"><div class="paragraph"><p>Why?: An IIFE removes variables from the global scope. This helps prevent variables and function declarations from living longer than expected in the global scope, which also helps avoid variable collisions.</p></div></aside></section><section id="_javascript_closure_2"><h2>JavaScript Closure</h2><div class="listingblock fragment"><div class="content"><pre class="highlight"><code class="javascript language-javascript">(function() {
+  angular.module('myApp', []);
+})();</code></pre></div></div></section><section id="_solutions_3"><h2>Solutions</h2><div class="ulist step"><ul><li class="fragment"><p>Manually add a closure to every file <span class="fragment"><span class="icon"><i class="fa fa-frown-o"></i></span></span></p></li><li class="fragment"><p>Use CoffeeScript <span class="fragment"><span class="icon"><i class="fa fa-meh-o"></i></span></span></p></li><li class="fragment"><p>Use Js Closure Wrap Asset Pipeline Plugin <span class="fragment"><span class="icon"><i class="fa fa-smile-o"></i></span></span></p></li></ul></div></section><section id="_js_closure_wrap_asset_pipeline_plugin"><h2>Js Closure Wrap Asset Pipeline Plugin</h2><div class="listingblock fragment"><div class="content"><pre class="highlight"><code class="gradle language-gradle">buildscript {
+  dependencies {
+    classpath 'com.craigburke:js-closure-wrap-asset-pipelin:1.1.0'
+  }
+}</code></pre></div></div></section><section id="_wrapping_our_javascript"><h2>Wrapping Our JavaScript</h2><div class="listingblock fragment"><div class="content"><pre class="highlight"><code class="javascript language-javascript">//= wrapped
+angular.module('myApp', []);</code></pre></div></div></section></section>
+<section><section id="_issue_4"><h2>Issue #4</h2><div class="paragraph subheading"><p>Managing Templates</p></div></section><section id="_angular_template_resolution"><h2>Angular Template Resolution</h2><div class="listingblock"><div class="content"><pre class="highlight"><code class="html language-html">&lt;div ng-include=" 'my-template.html' "&gt;&lt;/div&gt;</code></pre></div></div>
+<div class="paragraph"><p>If <strong>my-template.html</strong> isn&#8217;t in Angular&#8217;s template cache then an HTTP GET request is done for <strong>my-template.html</strong></p></div>
+<aside class="notes"><div class="ulist"><ul><li><p>Templates are usually used for HTML used by controllers and directives</p></li><li><p>You want to avoid the performance hit of an extra HTTP request</p></li><li><p>You want to make absolutely sure javascript and templates are in sync</p></li></ul></div></aside></section><section id="_adding_to_the_template_cache"><h2>Adding to The Template Cache</h2><div class="listingblock fragment"><div class="title">Template in a script tag</div><div class="content"><pre class="highlight"><code class="html language-html">&lt;script type="text/ng-template" id="my-template.html"&gt;
+  &lt;h1&gt;My template&lt;/h1&gt;
+&lt;/script&gt;</code></pre></div></div>
+<div class="listingblock fragment"><div class="title">Add directly to $templateCache in a run block</div><div class="content"><pre class="highlight"><code class="javascript language-javascript">myApp.run(function($templateCache) {
+  $templateCache.put('my-template.html', '&lt;h1&gt;My template&lt;/h1&gt;');
+});</code></pre></div></div></section><section id="_solutions_4"><h2>Solutions</h2><div class="ulist step"><ul><li class="fragment"><p>Just use plain html template files <span class="fragment"><span class="icon"><i class="fa fa-frown-o"></i></span></span></p></li><li class="fragment"><p>Add to $templateCache via a script tag or run block <span class="fragment"><span class="icon"><i class="fa fa-frown-o"></i></span></span></p></li><li class="fragment"><p>Use the Angular Templates Asset Pipeline plugin <span class="fragment"><span class="icon"><i class="fa fa-smile-o"></i></span></span></p></li></ul></div></section><section id="_angular_template_asset_pipeline_plugin"><h2>Angular Template Asset Pipeline Plugin</h2><div class="listingblock fragment"><div class="content"><pre class="highlight"><code class="gradle language-gradle">buildscript {
+  dependencies {
+    classpath 'com.craigburke.angular:angular-template-asset-pipeline:2.2.1'
+  }
+}</code></pre></div></div></section><section id="_example"><h2>Example</h2><div class="listingblock fragment"><div class="title">file located at <strong>src/assets/js/my-app/users/list.tpl.html</strong></div><div class="content"><pre class="highlight"><code class="html language-html">&lt;p&gt;Hello&lt;/p&gt;</code></pre></div></div>
+<div class="listingblock fragment"><div class="title">Becomes something like this:</div><div class="content"><pre class="highlight"><code class="javascript language-javascript">angular.module('myApp.users').run(function($templateCache) {
+  $templateCache.put('/my-app/users/list.html', '&lt;p&gt;Hello&lt;/p&gt;');
+});</code></pre></div></div></section><section id="_example_2"><h2>Example #2</h2><div class="listingblock fragment"><div class="title">Set <strong>moduleNameBase</strong> property</div><div class="content"><pre class="highlight"><code class="gradle language-gradle">assets {
+  configOptions = [
+    angular : [ moduleNameBase: 'myApp' ]
+  ]
+}</code></pre></div></div>
+<div class="listingblock fragment"><div class="title">file located at <strong>src/assets/js/users/list.tpl.html</strong></div><div class="content"><pre class="highlight"><code class="html language-html">&lt;p&gt;Hello&lt;/p&gt;</code></pre></div></div>
+<div class="listingblock fragment"><div class="title">Becomes something like this:</div><div class="content"><pre class="highlight"><code class="javascript language-javascript">angular.module('myApp.users').run(function($templateCache) {
+  $templateCache.put('/users/list.html', '&lt;p&gt;Hello&lt;/p&gt;');
+});</code></pre></div></div></section></section>
+<section><section id="_issue_5"><h2>Issue #5</h2><div class="paragraph subheading"><p>Running JavaScript Tests</p></div></section><section id="_solutions_5"><h2>Solutions</h2><div class="ulist step"><ul><li class="fragment"><p>Don&#8217;t write tests <span class="fragment"><span class="icon"><i class="fa fa-frown-o"></i></span></span></p></li><li class="fragment"><p>Run test from Java using Nashorn or Rhino <span class="fragment"><span class="icon"><i class="fa fa-meh-o"></i></span></span></p></li><li class="fragment"><p>Use the Jasmine Gradle Plugin <span class="fragment"><span class="icon"><i class="fa fa-smile-o"></i></span></span></p></li></ul></div></section><section id="_the_jasmine_gradle_plugin"><h2>The Jasmine Gradle Plugin</h2><div class="paragraph subheading"><p>Getting Started</p></div>
+<div class="listingblock fragment"><div class="content"><pre class="highlight"><code class="gradle language-gradle">plugins {
+  id 'com.moowork.node' version '0.10'
+  id 'com.craigburke.jasmine' version '1.0.1'
+}</code></pre></div></div></section><section id="_jasmine_tasks"><h2>Jasmine Tasks</h2><div class="paragraph fragment"><p><strong>jasmineRun</strong> Runs jasmine tests</p></div>
+<div class="paragraph fragment"><p><strong>jasmineWatch</strong> Runs jasmine tests in watch mode</p></div>
+<div class="paragraph fragment"><p><strong>jasmineClean</strong> Removes generated karma config file</p></div></section><section id="_jasmine_configuration"><h2>Jasmine Configuration</h2><div class="listingblock fragment"><div class="content"><pre class="highlight"><code class="gradle language-gradle">jasmine {
+  files = [
+    'bower/angular/angular.js',
+    'bower/**/*.js',
+    '**/*.module.js',
+    '**/!(*.spec).js',
+    '**/*.spec.js'
+  ]
+}</code></pre></div></div></section></section>
+<section><section id="_server_side_frameworks"><h2>Server-Side Frameworks</h2><div class="paragraph subheading"><p>Spring Boot, Grails and Ratpack</p></div></section><section id="_spring_boot"><h2>Spring Boot</h2><div class="listingblock"><div class="content"><pre class="highlight"><code class="groovy language-groovy">buildscript {
+  dependencies {
+	// Asset pipeline modules set as build dependencies
+	classpath 'com.craigburke.angular:angular-annotate-asset-pipeline:2.1.2'
+	classpath 'com.craigburke:js-closure-wrap-asset-pipeline:1.1.0'
+	classpath 'com.craigburke.angular:angular-template-asset-pipeline:2.2.1'
+  }
+}
+
+dependencies {
+  compile 'com.bertramlabs.plugins:asset-pipeline-spring-boot:2.4.2'
+
+  // Asset pipeline modules set as runtime dependencies
+  runtime 'com.craigburke.angular:angular-annotate-asset-pipeline:2.1.2'
+  runtime 'com.craigburke:js-closure-wrap-asset-pipeline:1.1.0'
+  runtime 'com.craigburke.angular:angular-template-asset-pipeline:2.2.1'
+}</code></pre></div></div></section><section id="_spring_boot_2"><h2>Spring Boot (2)</h2><div class="listingblock"><div class="content"><pre class="highlight"><code class="groovy language-groovy">package angular
+
+import org.springframework.boot.SpringApplication
+import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.context.annotation.ComponentScan
+
+@SpringBootApplication
+@ComponentScan('asset.pipeline.springboot')
+class Application {
+
+    static void main(String[] args) {
+        SpringApplication.run Application, args
+    }
+}</code></pre></div></div></section><section id="_grails_3"><h2>Grails 3</h2><div class="paragraph subheading"><p>Good News! Everything works out of the box!</p></div>
+<div class="admonitionblock warning fragment"><table><tr><td class="icon"><i class="fa fa-warning" title="Warning"></i></td><td class="content">Any configuration settings should be in both the build.gradle and application.yml</td></tr></table></div></section><section id="_ratpack"><h2>Ratpack</h2><div class="paragraph subheading"><p>Asset Pipeline works well there too:</p></div>
+<div class="paragraph link"><p><a href="https://github.com/davydotcom/ratpack-asset-pipeline-example" class="bare">https://github.com/davydotcom/ratpack-asset-pipeline-example</a></p></div></section></section>
+<section id="_resources"><h2>Resources</h2><div class="paragraph subheading"><p>Books</p></div>
+<div class="ulist resources"><ul><li><p><span class="icon"><i class="fa fa-book"></i></span> AngularJS: Up and Running</p><div class="ulist"><ul><li><p><a href="http://www.amazon.com/AngularJS-Running-Enhanced-Productivity-Structured/dp/1491901942/" class="bare">http://www.amazon.com/AngularJS-Running-Enhanced-Productivity-Structured/dp/1491901942/</a></p></li></ul></div></li><li><p><span class="icon"><i class="fa fa-book"></i></span> ng-book</p><div class="ulist"><ul><li><p><a href="https://www.ng-book.com/" class="bare">https://www.ng-book.com/</a></p></li></ul></div></li><li><p><span class="icon"><i class="fa fa-book"></i></span> Pro AngularJs</p><div class="ulist"><ul><li><p><a href="http://www.amazon.com/gp/product/1430264489/" class="bare">http://www.amazon.com/gp/product/1430264489/</a></p></li></ul></div></li><li><p><span class="icon"><i class="fa fa-book"></i></span> Learning Ratpack (Dan Woods) - If he ever finishes it</p><div class="ulist"><ul><li><p><a href="http://www.amazon.com/Learning-Ratpack-Simple-Powerful-Applications/dp/1491921668" class="bare">http://www.amazon.com/Learning-Ratpack-Simple-Powerful-Applications/dp/1491921668</a></p></li></ul></div></li></ul></div>
+<div class="paragraph subheading"><p>Presentations</p></div>
+<div class="ulist resources"><ul><li><p><span class="icon"><i class="fa fa-bullhorn"></i></span>Asset-Pipeline by <strong>THE</strong> David Estes (later today)</p></li></ul></div></section>
+<section id="_thank_you"><h2>Thank You</h2></section></div></div><script src="reveal.js/lib/js/head.min.js"></script><script src="reveal.js/js/reveal.js"></script><script type="text/javascript">// See https://github.com/hakimel/reveal.js#configuration for a full list of configuration options
+Reveal.initialize({
+  // Display controls in the bottom right corner
+  controls: true,
+  // Display a presentation progress bar
+  progress: true,
+  // Display the page number of the current slide
+  slideNumber: false,
+  // Push each slide change to the browser history
+  history: false,
+  // Enable keyboard shortcuts for navigation
+  keyboard: true,
+  // Enable the slide overview mode
+  overview: true,
+  // Vertical centering of slides
+  center: true,
+  // Enables touch navigation on devices with touch input
+  touch: true,
+  // Loop the presentation
+  loop: false,
+  // Change the presentation direction to be RTL
+  rtl: false,
+  // Turns fragments on and off globally
+  fragments: true,
+  // Flags if the presentation is running in an embedded mode,
+  // i.e. contained within a limited portion of the screen
+  embedded: false,
+  // Number of milliseconds between automatically proceeding to the
+  // next slide, disabled when set to 0, this value can be overwritten
+  // by using a data-autoslide attribute on your slides
+  autoSlide: 0,
+  // Stop auto-sliding after user input
+  autoSlideStoppable: true,
+  // Enable slide navigation via mouse wheel
+  mouseWheel: false,
+  // Hides the address bar on mobile devices
+  hideAddressBar: true,
+  // Opens links in an iframe preview overlay
+  previewLinks: false,
+  // Theme (e.g., beige, black, league, night, serif, simple, sky, solarized, white)
+  // NOTE setting the theme in the config no longer works in reveal.js 3.x
+  //theme: Reveal.getQueryHash().theme || 'white',
+  // Transition style (e.g., none, fade, slide, convex, concave, zoom)
+  transition: Reveal.getQueryHash().transition || 'slide',
+  // Transition speed (e.g., default, fast, slow)
+  transitionSpeed: 'default',
+  // Transition style for full page slide backgrounds (e.g., none, fade, slide, convex, concave, zoom)
+  backgroundTransition: 'fade',
+  // Number of slides away from the current that are visible
+  viewDistance: 3,
+  // Parallax background image (e.g., "'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg'")
+  parallaxBackgroundImage: '',
+  // Parallax background size in CSS syntax (e.g., "2100px 900px")
+  parallaxBackgroundSize: '',
+
+  // The "normal" size of the presentation, aspect ratio will be preserved
+  // when the presentation is scaled to fit different resolutions. Can be
+  // specified using percentage units.
+  width: 960,
+  height: 700,
+
+  // Factor of the display size that should remain empty around the content
+  margin: 0.1,
+
+  // Bounds for smallest/largest possible scale to apply to content
+  minScale: 0.2,
+  maxScale: 1.5,
+
+  // Optional libraries used to extend on reveal.js
+  dependencies: [
+      { src: 'reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+      { src: 'reveal.js/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+      { src: 'reveal.js/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+      { src: 'reveal.js/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+      { src: 'reveal.js/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+      { src: 'reveal.js/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+  ]
+});</script><div id="footer">
+	AngularJS in a Groovy World
+</div></body></html>
