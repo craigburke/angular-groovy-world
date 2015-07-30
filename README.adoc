@@ -1,0 +1,12 @@
+= AngularJS in a Groovy World
+
+== Presentation
+
+== Code
+setup/01-start - Simple Static Site
+setup/02-bower - Bower Installer Gradle Plugin
+setup/03-annotate - Angular Annotate Asset Pipeline
+setup/04-closure - JS Closure Wrap Asset Pipeline
+setup/05-template - Angular Template Asset Pipeline
+setup/06-test - Jasmine Gradle Plugin (Final)
+setup/07-spring-boot - Spring Boot version
