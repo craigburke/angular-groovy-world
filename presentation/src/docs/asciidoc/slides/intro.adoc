@@ -1,0 +1,23 @@
+== Introduction
+
+Let's Build An Angular App
+
+=== What We'll Need
+
+[.step]
+* Gradle [.fragment]#(and various plugins)#
+* Asset Pipeline [.fragment]#(and various modules)#
+* John Papa's Angular Style Guide
+* That's About It 
+
+=== Starting Simple
+ 
+[source,groovy]
+----
+plugins {
+  id 'com.bertramlabs.plugins.asset-pipeline' version '2.4.2'
+}
+
+task build(dependsOn: ['assetClean', 'assetCompile'])
+assetCompile.shouldRunAfter 'assetClean'
+----

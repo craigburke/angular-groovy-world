@@ -1,0 +1,21 @@
+== Resources
+
+[.subheading]
+Books 
+
+[.resources]
+* icon:book[] AngularJS: Up and Running
+** http://www.amazon.com/AngularJS-Running-Enhanced-Productivity-Structured/dp/1491901942/
+* icon:book[] ng-book
+** https://www.ng-book.com/
+* icon:book[] Pro AngularJs
+** http://www.amazon.com/gp/product/1430264489/
+* icon:book[] Learning Ratpack (Dan Woods) - If he ever finishes it
+** http://www.amazon.com/Learning-Ratpack-Simple-Powerful-Applications/dp/1491921668
+
+
+[.subheading]
+Presentations
+
+[.resources]
+* icon:bullhorn[]Asset-Pipeline by *THE* David Estes (later today)

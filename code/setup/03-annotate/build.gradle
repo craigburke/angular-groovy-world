@@ -1,0 +1,31 @@
+buildscript {
+  dependencies {
+    classpath 'com.craigburke.angular:angular-annotate-asset-pipeline:2.1.2'
+  }
+}
+
+plugins {
+  id 'com.bertramlabs.plugins.asset-pipeline' version '2.4.2'
+  id 'com.moowork.node' version '0.10'
+  id 'com.craigburke.bower-installer' version '1.3.3'
+}
+
+bower {
+  dependencies = [
+    'angular': '1.4.x',
+    'bootstrap': '3.3.x',
+    'fontawesome': '4.3.x',
+    'highcharts-release': '4.1.x',
+    'highcharts-ng': '0.0.8'
+  ]
+	
+  sources = [
+    'bootstrap': ['dist/css/bootstrap.min.css'],
+    'highcharts-release': ['highcharts.js', 'adapters/standalone-framework.js']
+  ]
+	
+  excludes = ['jquery']
+}
+
+task build(dependsOn: ['assetClean', 'bowerInstall', 'assetCompile'])
+assetCompile.shouldRunAfter 'assetClean', 'bowerInstall'

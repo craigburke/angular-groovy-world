@@ -1,0 +1,48 @@
+== Issue #5
+[.subheading]
+Running JavaScript Tests
+
+=== Solutions
+
+[.step]
+* Don't write tests [.fragment]#icon:frown-o[]#
+* Run test from Java using Nashorn or Rhino [.fragment]#icon:meh-o[]#
+* Use the Jasmine Gradle Plugin [.fragment]#icon:smile-o[]#
+
+=== The Jasmine Gradle Plugin
+[.subheading]
+Getting Started
+
+[source,gradle, role='fragment']
+----
+plugins {
+  id 'com.moowork.node' version '0.10'
+  id 'com.craigburke.jasmine' version '1.0.1'
+}
+----
+
+=== Jasmine Tasks
+
+[role='fragment']
+*jasmineRun* Runs jasmine tests
+
+[role='fragment']
+*jasmineWatch* Runs jasmine tests in watch mode
+
+[role='fragment']
+*jasmineClean* Removes generated karma config file
+
+=== Jasmine Configuration
+
+[source,gradle, role='fragment']
+----
+jasmine {
+  files = [
+    'bower/angular/angular.js',
+    'bower/**/*.js',
+    '**/*.module.js',
+    '**/!(*.spec).js',
+    '**/*.spec.js'
+  ]
+}
+----

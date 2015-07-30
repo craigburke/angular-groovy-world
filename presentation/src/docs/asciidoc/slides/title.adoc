@@ -1,0 +1,9 @@
+[[title]]
+[data-background="#b41f1f"]
+== AngularJS in A Groovy World
+
+[[author]]
+Craig Burke
+
+[[title-logo]]
+image::gr8uslogo.png[]

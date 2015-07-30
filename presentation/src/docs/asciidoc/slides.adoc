@@ -1,0 +1,25 @@
+:icons: font
+:imagesdir: images
+:sourcedir: snippets
+
+include::slides/title.adoc[]
+
+include::slides/about-me.adoc[]
+
+include::slides/intro.adoc[]
+
+include::slides/dependencies.adoc[]
+
+include::slides/minification.adoc[]
+
+include::slides/closure.adoc[]
+
+include::slides/templates.adoc[]
+
+include::slides/tests.adoc[]
+
+include::slides/frameworks.adoc[]
+
+include::slides/resources.adoc[]
+
+include::slides/end.adoc[]

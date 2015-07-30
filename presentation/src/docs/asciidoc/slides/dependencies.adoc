@@ -1,0 +1,62 @@
+== Issue #1 
+[.subheading]
+Client-Side Dependencies
+
+=== Solutions
+
+[.step]
+* Download and Manage Dependencies Ourselves [.fragment]#icon:frown-o[]#
+* Use Npm or Bower with Grunt or Gulp [.fragment]#icon:frown-o[]#
+* Use Gradle with the Bower Installer Plugin [.fragment]#icon:smile-o[]#
+
+=== Bower Installer Plugin
+[.subheading]
+Getting Started
+
+[source,gradle,role='fragment']
+----
+plugins {
+  id 'com.moowork.node' version '0.10'
+  id 'com.craigburke.bower-installer' version '1.3.3'
+}
+----
+
+=== Bower Installer Tasks
+
+[role='fragment']
+*bowerInstall* installs dependencies
+
+[role='fragment']
+*bowerClean* removes dependencies
+
+[role='fragment']
+*bowerRefresh* removes and reinstalls dependencies
+
+=== Bower Installer Configuration
+
+[source,gradle,role='fragment']
+----
+bower {
+  dependencies = [ 
+    bootstrap: '3.3.x'
+  ]
+  
+  sources = [
+    bootstrap: ['dist/css/bootstrap.min.css', 'dist/fonts/**']
+  ]
+  
+  excludes = ['jquery']
+}
+----
+
+=== Adding A New Dependency
+
+[.step]
+* Add dependency to *dependencies* list
+* `bowerRefresh -PbowerDebug=true`
+* Limit files with the *sources* properties
+* Limit transitive dependencies with *excludes*
+* `bowerRefresh`
+
+
+

@@ -1,0 +1,6 @@
+plugins {
+  id 'com.bertramlabs.plugins.asset-pipeline' version '2.4.2'
+}
+
+task build(dependsOn: ['assetClean', 'assetCompile'])
+assetCompile.shouldRunAfter 'assetClean'
