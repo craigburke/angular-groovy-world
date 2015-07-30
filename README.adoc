@@ -2,6 +2,8 @@
 
 == Presentation
 
+* http://www.craigburke.com/angular-groovy-world/[Presentation Slides (HTML)]
+
 == Code
 setup/01-start - Simple Static Site
 setup/02-bower - Bower Installer Gradle Plugin
@@ -10,3 +12,10 @@ setup/04-closure - JS Closure Wrap Asset Pipeline
 setup/05-template - Angular Template Asset Pipeline
 setup/06-test - Jasmine Gradle Plugin (Final)
 setup/07-spring-boot - Spring Boot version
+
+== See Also
+* https://github.com/craigburke/bower-installer-gradle[Bower Installer Gradle Plugin]
+* https://github.com/craigburke/jasmine-gradle[Jasmine Gradle Plugin]
+* https://github.com/craigburke/angular-template-asset-pipeline[AngularJS Template Asset Pipeline Module]
+* https://github.com/craigburke/angular-annotate-asset-pipeline[AngularJS Annotate Asset Pipeline Module]
+* https://github.com/craigburke/js-closure-wrap-asset-pipeline[JS Closure Wrap Asset Pipeline Module]
