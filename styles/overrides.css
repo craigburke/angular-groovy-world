@@ -30,6 +30,7 @@ body {
 	color: #FFF;
 	text-shadow: 1px 1px 5px #595959;
 	z-index: 29;
+	box-shadow: 20px 20px 50px 20px black;
 }
 
 #footer p {
