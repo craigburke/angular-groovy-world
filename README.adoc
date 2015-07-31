@@ -1,8 +1,6 @@
 = AngularJS in a Groovy World
 Craig Burke <craig@craigburke.com>
 
-See: http://www.craigburke.com/angular-groovy/world[the slides]
-
 * http://www.craigburke.com/angular-groovy-world/[Presentation Slides (HTML)]
 
 == Code
